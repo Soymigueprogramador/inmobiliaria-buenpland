@@ -1,0 +1,92 @@
+.navbar {
+  position: relative; /* IMPORTANTE para mobile */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 32px;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+}
+
+/* LOGO */
+.logo img {
+  height: 40px;
+}
+
+/* LINKS (DESKTOP) */
+.links {
+  display: flex;
+  gap: 24px;
+  list-style: none;
+}
+
+.links li {
+  font-size: 16px;
+  cursor: pointer;
+  position: relative;
+}
+
+/* Hover underline */
+.links li::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: black;
+  transition: width 0.3s;
+}
+
+.links li:hover::after {
+  width: 100%;
+}
+
+/* BUTTON */
+.actions button {
+  padding: 10px 16px;
+  border: none;
+  background-color: black;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.actions button:hover {
+  opacity: 0.85;
+}
+
+/* MENU MOBILE ICON */
+.menuToggle {
+  display: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* 📱 MOBILE */
+@media (max-width: 768px) {
+  .menuToggle {
+    display: block;
+  }
+
+  .links {
+    position: absolute;
+    top: 70px;
+    left: 0;
+    width: 100%;
+    background: white;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 0;
+    display: none;
+  }
+
+  .active {
+    display: flex;
+  }
+
+  .actions {
+    display: none; /* opcional */
+  }
+}
