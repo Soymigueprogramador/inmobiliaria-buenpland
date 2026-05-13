@@ -1,0 +1,56 @@
+.container {
+  display: flex;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.container img {
+  width: 50%;
+  border-radius: 10px;
+}
+
+.info {
+  flex: 1;
+}
+
+.price {
+  font-size: 2rem;
+  color: green;
+  margin: 1rem 0;
+}
+
+.details {
+  display: flex;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.description {
+  margin-top: 1rem;
+  line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .container img {
+    width: 100%;
+  }
+}
+
+.backButton {
+  margin: 1rem 2rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  background-color: #222;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.backButton:hover {
+  background-color: #444;
+}
