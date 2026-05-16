@@ -12,6 +12,7 @@ const PropertyCard = ({ property }) => {
           <p>${property.price}</p>
           <p>{property.location}</p>
           <p>{property.bedrooms} habitaciones</p>
+          <p>{property.bathrooms} baños</p>
         </div>
       </Link>
     </>
