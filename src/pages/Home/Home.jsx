@@ -1,7 +1,7 @@
 import PropertyCard from "../../components/PropertyCard/PropertyCard.jsx";
 import Filters from "../../components/Filters/Filters.jsx";
 import { properties } from "../../utils/mockData.js";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const Home = () => {
   const [filters, setFilters] = useState({
@@ -12,6 +12,14 @@ const Home = () => {
     bathrooms: "",
     state: "",
   });
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
+  }, []);
 
   const filteredProperties = properties.filter((property) => {
     const minPrice = Number(filters.minPrice);
@@ -38,14 +46,35 @@ const Home = () => {
     );
   });
 
+  const hasActiveFilters =
+    filters.minPrice ||
+    filters.maxPrice ||
+    filters.bedrooms ||
+    filters.location ||
+    filters.bathrooms ||
+    filters.state;
+
+  if (loading) return <p>Cargando propiedades...</p>;
+
   return (
     <div>
       <Filters filters={filters} setFilters={setFilters} />
 
+      {/* 👇 Indicador de filtros */}
+      <p style={{ margin: "10px 0" }}>
+        Filtros activos: {hasActiveFilters ? "Personalizados" : "Todos"}
+      </p>
+
       <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
-        {filteredProperties.map((property) => (
-          <PropertyCard key={property.id} property={property} />
-        ))}
+        {filteredProperties.length === 0 ? (
+          <p style={{ width: "100%" }}>
+            No se encontraron propiedades con esos filtros
+          </p>
+        ) : (
+          filteredProperties.map((property) => (
+            <PropertyCard key={property.id} property={property} />
+          ))
+        )}
       </div>
     </div>
   );
