@@ -2,15 +2,25 @@ import PropertyCard from "../../components/PropertyCard/PropertyCard.jsx";
 import Filters from "../../components/Filters/Filters.jsx";
 import { properties } from "../../utils/mockData.js";
 import { useState, useEffect } from "react";
+import { getFromStorage, saveToStorage } from "../../utils/storage.js";
 
 const Home = () => {
-  const [filters, setFilters] = useState({
-    minPrice: "",
-    maxPrice: "",
-    bedrooms: "",
-    location: "",
-    bathrooms: "",
-    state: "",
+  const [filters, setFilters] = useState(() => {
+    const storedFilters = getFromStorage("filters");
+    return (
+      storedFilters || {
+        minPrice: "",
+        maxPrice: "",
+        bedrooms: "",
+        location: "",
+        bathrooms: "",
+        state: "",
+      }
+    );
+  });
+
+  const [favorites, setFavorites] = useState(() => {
+    return getFromStorage("favorites") || [];
   });
 
   const [loading, setLoading] = useState(true);
@@ -21,20 +31,48 @@ const Home = () => {
     }, 500);
   }, []);
 
+  useEffect(() => {
+    saveToStorage("filters", filters);
+  }, [filters]);
+
+  useEffect(() => {
+    saveToStorage("favorites", favorites);
+  }, [favorites]);
+
+  const toggleFavorite = (id) => {
+    if (favorites.includes(id)) {
+      setFavorites(favorites.filter((f) => f !== id));
+    } else {
+      setFavorites([...favorites, id]);
+    }
+  };
+
+  // ✅ NUEVO: limpiar filtros
+  const clearFilters = () => {
+    setFilters({
+      minPrice: "",
+      maxPrice: "",
+      bedrooms: "",
+      location: "",
+      bathrooms: "",
+      state: "",
+    });
+  };
+
   const filteredProperties = properties.filter((property) => {
-    const minPrice = Number(filters.minPrice);
-    const maxPrice = Number(filters.maxPrice);
-    const bedrooms = Number(filters.bedrooms);
-    const bathrooms = Number(filters.bathrooms);
+    const minPrice = filters.minPrice ? Number(filters.minPrice) : null;
+    const maxPrice = filters.maxPrice ? Number(filters.maxPrice) : null;
+    const bedrooms = filters.bedrooms ? Number(filters.bedrooms) : null;
+    const bathrooms = filters.bathrooms ? Number(filters.bathrooms) : null;
 
     return (
-      (!filters.minPrice || property.price >= minPrice) &&
-      (!filters.maxPrice || property.price <= maxPrice) &&
+      (!minPrice || property.price >= minPrice) &&
+      (!maxPrice || property.price <= maxPrice) &&
       (!filters.bedrooms ||
         (filters.bedrooms === "3"
           ? property.bedrooms >= 3
           : property.bedrooms === bedrooms)) &&
-      (!filters.bathrooms || property.bathrooms === bathrooms) &&
+      (!bathrooms || property.bathrooms === bathrooms) &&
       (!filters.location ||
         (property.location || "")
           .toLowerCase()
@@ -58,9 +96,20 @@ const Home = () => {
 
   return (
     <div>
-      <Filters filters={filters} setFilters={setFilters} />
+      <Filters
+        filters={filters}
+        setFilters={setFilters}
+        onClearFilters={clearFilters}
+      />
 
-      {/* 👇 Indicador de filtros */}
+      <p style={{ margin: "5px 0", fontWeight: "bold" }}>
+        {filteredProperties.length === 0
+          ? "Sin resultados"
+          : `${filteredProperties.length} resultado${filteredProperties.length > 1 ? "s" : ""}`}
+      </p>
+
+      {favorites.length === 0 && <p>No tenés una propiedad favorita</p>}
+
       <p style={{ margin: "10px 0" }}>
         Filtros activos: {hasActiveFilters ? "Personalizados" : "Todos"}
       </p>
@@ -72,7 +121,12 @@ const Home = () => {
           </p>
         ) : (
           filteredProperties.map((property) => (
-            <PropertyCard key={property.id} property={property} />
+            <PropertyCard
+              key={property.id}
+              property={property}
+              isFavorite={favorites.includes(property.id)}
+              onToggleFavorite={toggleFavorite}
+            />
           ))
         )}
       </div>
